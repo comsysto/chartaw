@@ -120,23 +120,33 @@ public class PieChart extends WebMarkupContainer {
     @Override
     public void renderHead(IHeaderResponse response) {
 
-        String data = "var data = " + getDataAsString();
+        String varData = "data_" + getMarkupId();
+        String varOptions = "options_" + getMarkupId();
+        String varCtx = "ctx_" + getMarkupId();
+        String varChart = "chart_" + getMarkupId();
+
+        String data = "var " + varData + " = " + getDataAsString();
 
 
-        String ctx = "var ctx = document.getElementById(\"" + getMarkupId() + "\").getContext(\"2d\");\n" +
-                "var myNewChart = new Chart(ctx).Pie(data, options);";
+        String ctx = "var " + varCtx + " = document.getElementById(\"" + getMarkupId() + "\").getContext(\"2d\");\n" +
+                "var " + varChart + " = new Chart(" + varCtx + ").Pie(" + varData + ", " + varOptions + ");";
 
         super.renderHead(response);
 
         response.render(JavaScriptReferenceHeaderItem.forReference(new JavaScriptResourceReference(this.getClass(), "Chart.js")));
 
-        final PackageTextTemplate template = new PackageTextTemplate(this.getClass(), "options.js");
+        final PackageTextTemplate template = new PackageTextTemplate(this.getClass(), "options.template");
 
         template.interpolate(getOptions());
 
         response.render(
                 OnDomReadyHeaderItem.forScript(
-                        data + "\n" + template.getString() + "\n" + ctx));
+                        data
+                                + "\n"
+                                + "var " + varOptions + " = "
+                                + "\n"
+                                + template.getString()
+                                + "\n" + ctx));
 
     }
 
