@@ -1,5 +1,6 @@
-package com.comsysto.charts;
+package com.comsysto.charts.doughnut;
 
+import com.comsysto.charts.Chart;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
@@ -13,19 +14,16 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Pie charts are probably the most commonly used chart there are.
- * They are divided into segments, the arc of each segment shows a the proportional value of each piece of data.
- * They are excellent at showing the relational proportions between data.
+ * Doughnut charts are similar to pie charts, however they have the centre cut out, and are therefore shaped more like a doughnut than a pie!
+ * They are aso excellent at showing the relational proportions between data.
  * <p/>
- * For a pie chart, you must pass in an array of objects with a value and a color property.
+ * For a doughnut chart, you must pass in an array of objects with a value and a color property.
  * The value attribute should be a number, Chart.js will total all of the numbers and calculate the relative proportion of each.
  * The color attribute should be a string. Similar to CSS, for this string you can use HEX notation, RGB, RGBA or HSL.
- * <p/>
- * See http://www.chartjs.org/docs/ .
  *
  * @author Daniel Bartl
  */
-public class PieChart extends WebMarkupContainer {
+public class DoughnutChart extends WebMarkupContainer implements Chart {
 
     /** Boolean - Whether we should show a stroke on each segment */
     public boolean segmentShowStroke = true;
@@ -33,6 +31,8 @@ public class PieChart extends WebMarkupContainer {
     public String segmentStrokeColor = "#fff";
     /** Number - The width of each segment stroke */
     public int segmentStrokeWidth = 2;
+    /** The percentage of the chart that we cut out of the middle. */
+    public int percentageInnerCutout = 50;
     /** Boolean - Whether we should animate the chart */
     public boolean animation = true;
     /** Number - Amount of animation steps */
@@ -48,7 +48,7 @@ public class PieChart extends WebMarkupContainer {
 
     private final List<Data> data = new ArrayList<Data>();
 
-    public PieChart(String id) {
+    public DoughnutChart(String id) {
 
         super(id);
 
@@ -57,7 +57,7 @@ public class PieChart extends WebMarkupContainer {
 
     }
 
-    public PieChart withDataSlice(String value, String color) {
+    public DoughnutChart withDataSlice(String value, String color) {
 
         getData().add(new Data(value, color));
         return this;
@@ -106,6 +106,7 @@ public class PieChart extends WebMarkupContainer {
         options.put("segmentShowStroke", segmentShowStroke);
         options.put("segmentStrokeColor", segmentStrokeColor);
         options.put("segmentStrokeWidth", segmentStrokeWidth);
+        options.put("percentageInnerCutout", percentageInnerCutout);
         options.put("animation", animation);
         options.put("animationSteps", animationSteps);
         options.put("animationEasing", animationEasing);
@@ -129,11 +130,11 @@ public class PieChart extends WebMarkupContainer {
 
 
         String ctx = "var " + varCtx + " = document.getElementById(\"" + getMarkupId() + "\").getContext(\"2d\");\n" +
-                "var " + varChart + " = new Chart(" + varCtx + ").Pie(" + varData + ", " + varOptions + ");";
+                "var " + varChart + " = new Chart(" + varCtx + ").Doughnut(" + varData + ", " + varOptions + ");";
 
         super.renderHead(response);
 
-        response.render(JavaScriptReferenceHeaderItem.forReference(new JavaScriptResourceReference(this.getClass(), "Chart.js")));
+        response.render(JavaScriptReferenceHeaderItem.forReference(new JavaScriptResourceReference(Chart.class, "Chart.js")));
 
         final PackageTextTemplate template = new PackageTextTemplate(this.getClass(), "options.template");
 

@@ -1,6 +1,7 @@
 package com.comsysto;
 
-import com.comsysto.charts.PieChart;
+import com.comsysto.charts.doughnut.DoughnutChart;
+import com.comsysto.charts.pie.PieChart;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 
@@ -34,6 +35,15 @@ public class HomePage extends WebPage {
         pie2.segmentShowStroke = false;
         pie2.segmentStrokeColor = "#ccc";
         add(pie2);
+
+        DoughnutChart donut = new DoughnutChart("donut");
+
+        donut
+                .withDataSlice("10", "#F38630")
+                .withDataSlice("10", "#E0E4CC")
+                .withDataSlice("200", "#69D2E7");
+
+        add(donut);
 
     }
 
